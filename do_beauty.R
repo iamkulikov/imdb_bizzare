@@ -1,7 +1,6 @@
 library(dplyr)
 library(ggplot2)
 library(plotly)
-library(tidyjson)
 setwd("C:/Projects/imdb_bizzare")
 source("genre_script.R")
 
@@ -9,24 +8,25 @@ source("genre_script.R")
 
 options(timeout=400)  # for small bandwidth in seconds
 update_data <- 1      # download full database from IMDB and recalculate (1) or take local (0)
-download_filename <- "title.basics.tsv.gz"
+basics_fname <- "title.basics.tsv.gz"
+ratings_fname <- "title.ratings.tsv.gz"
 use_adult <- 0
 use_types <- c("movie")
-dataexport_fname <- "movies.xlsx"
-dataexport_sheetname <- c("data", "pairs_count")
-dataimport_fname <- "movies.xlsx"
-dataimport_sheetname <- c("data", "pairs_count")
+export_fname <- "movies.xlsx"
+export_sheetname <- c("data", "pairs_count")
+import_fname <- "movies.xlsx"
+import_sheetname <- c("data", "pairs_count")
 OMDB_API_KEY <- "3c35f91c"   # move to external file?
 
 ### Import data
 
 if (update_data == 1) {
-  updateDataFromIMDB(download_filename = download_filename, use_adult = use_adult, use_types = use_types, dataexport_fname = dataexport_fname, dataexport_sheetname = dataexport_sheetname)
-}
-
+  updateDataFromIMDB(basics_fname = basics_fname, use_adult = use_adult, use_types = use_types, export_fname = export_fname, export_sheetname = export_sheetname)
+  }
+  
 gc()
-df2 <- readxl::read_excel(dataimport_fname, sheet = dataimport_sheetname[1], col_names = T)
-genre_pairs <- readxl::read_excel(dataimport_fname, sheet = dataimport_sheetname[2], col_names = T)
+df2 <- readxl::read_excel(import_fname, sheet = import_sheetname[1], col_names = T)
+genre_pairs <- readxl::read_excel(import_fname, sheet = import_sheetname[2], col_names = T)
 genre_pairs_long <- expandPairList(genre_pairs = genre_pairs)
 moviecount <- dim(df2)[1]
 
@@ -50,5 +50,11 @@ ggplotly(gr, tooltip="text")
 
 
 ### Generate a long list of movies based on the chosen genre pair
+movie_list <- findMoviesByGenreComb(df2, "Romance", "Reality-TV")
+short_movie_list <- movie_list %>% arrange(averageRating) %>% slice_head(n = 5)
 
-findMoviesByGenreComb(df2, "News", "Fantasy")
+### Augment the short list with information from OMDB
+omdb_info <- getMovieDetails(imdb_codes = movie_list$tconst, OMDB_API_KEY = OMDB_API_KEY) %>% 
+                  select(imdbID, Poster, Plot)
+short_movie_list <- short_movie_list %>% left_join(omdb_info, by = c("tconst" = "imdbID")) %>% select(-c(tconst))
+short_movie_list

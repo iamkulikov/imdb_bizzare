@@ -1,11 +1,9 @@
-# imdb_bizzare
-Finding the strangest genre mixes in the IMDB movie database
+# imdb_bizzare: Finding the strangest genre mixes in the IMDB movie database
 
 1. updateDataFromIMDB
 2. importLocalData
-3. constructGenreList
-4. plotHeatmap
-5. findMoviesByGenreComb
-6. getMovieDetails
-7. parseMovieDetails
-8. 
+3. plotHeatmap
+4. findMoviesByGenreComb
+5. getMovieDetails
+6. parseMovieDetails
+7. interface

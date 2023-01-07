@@ -2,21 +2,28 @@
 
 ### Download source file from IMDB and save subset locally. Data description: https://www.imdb.com/interfaces/
 
-updateDataFromIMDB <- function(download_filename, use_adult, use_types, dataexport_fname, dataexport_sheetname) {
+updateDataFromIMDB <- function(basics_fname, use_adult, use_types, export_fname, export_sheetname) {
   
   # download
-  url <- glue::glue("https://datasets.imdbws.com/{download_filename}")
-  dest <- paste(getwd(), download_filename, sep="/")
+  url <- glue::glue("https://datasets.imdbws.com/{basics_fname}")
+  dest <- paste(getwd(), basics_fname, sep="/")
   #download.file(url, dest)
-  #gc()
+  url <- glue::glue("https://datasets.imdbws.com/{ratings_fname}")
+  dest <- paste(getwd(), ratings_fname, sep="/")
+  #download.file(url, dest)
+  gc()
   
   # read
-  df <- readr::read_tsv(download_filename)
+  df <- readr::read_tsv(basics_fname)
   
   # filter
   if (use_adult == 0) {df2 <- df %>% filter(isAdult == 0) } else {df2 <- df}
   remove(df)
-  df2 <- df2 %>% filter(titleType %in% use_types) %>% select(tconst, primaryTitle, genres)
+  df2 <- df2 %>% filter(titleType %in% use_types) %>% select(tconst, primaryTitle, startYear, genres)
+  
+  # augment with ratings
+  ratings_df <- readr::read_tsv(ratings_fname)
+  df2 <- df2 %>% left_join(ratings_df, by = c("tconst"="tconst"))
   
   # count pair prevalence
   genre_list <- df2$genres %>% stringr::str_split(., ",") %>% unlist %>% unique
@@ -35,8 +42,8 @@ updateDataFromIMDB <- function(download_filename, use_adult, use_types, dataexpo
   
   # export
   data_export <- list(df2, genre_pairs)
-  names(data_export) <- dataexport_sheetname
-  writexl::write_xlsx(data_export, path = dataexport_fname, col_names = TRUE, format_headers = TRUE)
+  names(data_export) <- export_sheetname
+  writexl::write_xlsx(data_export, path = export_fname, col_names = TRUE, format_headers = TRUE)
   rm(data_export)
   
   }
@@ -94,20 +101,34 @@ out <- data %>% mutate(first = stringr::str_detect(genres, genre1),
                second = stringr::str_detect(genres, genre2),
                both = first*second,
                imdbLink = glue::glue("https://www.imdb.com/title/{tconst}")) %>% 
-      filter(both == T) %>% select(tconst, primaryTitle, imdbLink)
+      filter(both == T) %>% select(tconst, primaryTitle, startYear, averageRating, numVotes, imdbLink)
 
 return(out)
 
 }
 
+### Function to get movie details from OMDB
+#a <- findMoviesByGenreComb(df2, "News", "Fantasy")
 
-### Function to augment movie list with ratings, posters and descriptions
+getMovieDetails <- function (imdb_codes, OMDB_API_KEY = OMDB_API_KEY) {
+  
+  #imdb_codes <- a$tconst
+  for (i in seq_along(imdb_codes)) {
+    
+    adres <- glue::glue("https://www.omdbapi.com/?i={imdb_codes[i]}&apikey={OMDB_API_KEY}")
+    #https://www.omdbapi.com/?i=tt10558850&apikey=3c35f91c
+    downloaded <- jsonlite::fromJSON(adres)
+    downloaded <- downloaded[names(downloaded) %in% c("imdbID","Title","Year","Plot","Poster","imdbRating","imdbVotes")] 
+    downloaded <- as.data.frame(downloaded)
+    downloaded
+    if (i == 1) {output <- downloaded} else {output <- rbind(output, downloaded)}
+    
+  }
+  #output
+  
+  return(tibble(output))
+  
+}
 
-#adres <- "https://www.omdbapi.com/?i=tt1538901&apikey=3c35f91c"
-#adres <- glue("https://www.omdbapi.com/?i={tconst}&apikey={OMDB_API_KEY}")
-#print(adres)
-#downloaded <- jsonlite::fromJSON(adres)
-#downloaded %>% tidyjson::spread_all
-#tt10245828
 
-
+### Function to parse movie details from IMDB directly
