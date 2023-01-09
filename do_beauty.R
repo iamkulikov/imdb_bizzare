@@ -37,6 +37,7 @@ genre_pairs_long_t <- genre_pairs_long %>%
   mutate(text = glue::glue("{genre1} \n {genre2} \n Count = {pair_share}")) %>%
   mutate(genre1 = as.factor(genre1), genre2 = as.factor(genre2)) %>%
   mutate(genre1 = reorder(genre1,desc(pair_share)), genre2 = reorder(genre2,pair_share))
+genres_ordered <- genre_pairs_long_t$genre1 %>% levels
 
 gr <- ggplot(genre_pairs_long_t, 
             aes(x = genre1, y = genre2, fill = log(pair_share), text = text)) + 
@@ -48,7 +49,7 @@ ggplotly(gr, tooltip="text")
 
 
 ### Generate a long list of movies based on the chosen genre pair
-movie_list <- findMoviesByGenreComb(df2, "Romance", "Reality-TV")
+movie_list <- findMoviesByGenreComb(df2, "Sci-Fi", "Reality-TV")
 short_movie_list <- movie_list %>% arrange(averageRating) %>% slice_head(n = 5)
 
 ### Augment the short list with information from OMDB
