@@ -44,6 +44,8 @@ updateDataFromIMDB <- function(basics_fname, use_adult, use_types, export_fname,
   data_export <- list(df2, genre_pairs)
   names(data_export) <- export_sheetname
   writexl::write_xlsx(data_export, path = export_fname, col_names = TRUE, format_headers = TRUE)
+  #write.csv(df2, importcsvdata_fname, row.names=FALSE)
+  #write.csv(genre_pairs, importcsvpairs_fname, row.names=FALSE)
   rm(data_export)
   
   }
