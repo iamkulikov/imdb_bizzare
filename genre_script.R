@@ -100,8 +100,9 @@ findMoviesByGenreComb <- function(data, genre1, genre2) {
 out <- data %>% mutate(first = stringr::str_detect(genres, genre1), 
                second = stringr::str_detect(genres, genre2),
                both = first*second,
-               imdbLink = glue::glue("https://www.imdb.com/title/{tconst}")) %>% 
-      filter(both == T) %>% select(tconst, primaryTitle, startYear, averageRating, numVotes, imdbLink)
+               imdbLink = glue::glue("https://www.imdb.com/title/{tconst}"),
+               linkedTitle = glue::glue("<a href = '{imdbLink}', target='_blank'>{primaryTitle}</a>")) %>% 
+      filter(both == T) %>% select(-c(first, second, both)) %>% arrange(desc(averageRating))
 
 return(out)
 

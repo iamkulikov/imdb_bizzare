@@ -50,10 +50,10 @@ ggplotly(gr, tooltip="text")
 
 ### Generate a long list of movies based on the chosen genre pair
 movie_list <- findMoviesByGenreComb(df2, "Sci-Fi", "Reality-TV")
-short_movie_list <- movie_list %>% arrange(averageRating) %>% slice_head(n = 5)
+short_movie_list <- movie_list %>% slice_head(n = 3)
 
 ### Augment the short list with information from OMDB
 omdb_info <- getMovieDetails(imdb_codes = movie_list$tconst, OMDB_API_KEY = OMDB_API_KEY) %>% 
                   select(imdbID, Poster, Plot)
-short_movie_list <- short_movie_list %>% left_join(omdb_info, by = c("tconst" = "imdbID")) %>% select(-c(tconst))
-short_movie_list$Plot
+aug_movie_list <- short_movie_list %>% left_join(omdb_info, by = c("tconst" = "imdbID")) %>% select(-c(tconst))
+aug_movie_list
