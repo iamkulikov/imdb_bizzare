@@ -1,3 +1,4 @@
+source("do_beauty.R")
 library(shiny)
 
 ui <- fluidPage(

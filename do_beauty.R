@@ -1,6 +1,8 @@
 library(dplyr)
 library(ggplot2)
 library(plotly)
+library(rsconnect)
+
 setwd("C:/Projects/imdb_bizzare")
 source("genre_script.R")
 
@@ -45,15 +47,15 @@ gr <- ggplot(genre_pairs_long_t,
             theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 0),
                   axis.title.x = element_blank(), axis.title.y = element_blank())
 
-ggplotly(gr, tooltip="text")
+#ggplotly(gr, tooltip="text")
 
 
 ### Generate a long list of movies based on the chosen genre pair
-movie_list <- findMoviesByGenreComb(df2, "Sci-Fi", "Reality-TV")
-short_movie_list <- movie_list %>% slice_head(n = 3)
+#movie_list <- findMoviesByGenreComb(df2, "Sci-Fi", "Reality-TV")
+#short_movie_list <- movie_list %>% slice_head(n = 3)
 
 ### Augment the short list with information from OMDB
-omdb_info <- getMovieDetails(imdb_codes = movie_list$tconst, OMDB_API_KEY = OMDB_API_KEY) %>% 
-                  select(imdbID, Poster, Plot)
-aug_movie_list <- short_movie_list %>% left_join(omdb_info, by = c("tconst" = "imdbID")) %>% select(-c(tconst))
-aug_movie_list
+#omdb_info <- getMovieDetails(imdb_codes = movie_list$tconst, OMDB_API_KEY = OMDB_API_KEY) %>% 
+#                  select(imdbID, Poster, Plot)
+#aug_movie_list <- short_movie_list %>% left_join(omdb_info, by = c("tconst" = "imdbID")) %>% select(-c(tconst))
+#aug_movie_list
