@@ -2,7 +2,7 @@
 
 https://iamkulikov.shinyapps.io/imdb_bizzare/
 
-![Screenshot of the app](imdb_screen.jpg)
+![Screenshot of the app](imdb_screen.JPG)
 
 **To do:**
 1. Augment data with OMDB
