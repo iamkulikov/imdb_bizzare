@@ -2,6 +2,8 @@
 
 https://iamkulikov.shinyapps.io/imdb_bizzare/
 
+![Screenshot of the app](imdb_screen.jpeg)
+
 To do:
 1. Augment data with OMDB
 2. Plot legend?
