@@ -6,28 +6,27 @@ ui <- fluidPage(
   theme = bslib::bs_theme(bootswatch = "flatly"),
   
   titlePanel("Choose movies to watch based on genre combinations (IMDB)"),
-  fluidRow(
-    column(7,
-      plotlyOutput("heat")),
-    column(5,
+  
+  fluidRow(  
+    column(
+      6,
+      plotlyOutput("heat", height = "100%")),
+    column(
+      6,
       textOutput("chosen_genres"),
       tags$head(tags$style("#chosen_genres{color: red;
-                                 font-size: 30px;
-                                 font-style: bold;
-                                 }")),
+                                          font-size: 25px;
+                                          font-style: bold;
+                                          }")),
       dataTableOutput("table"))
-  ),
-  fluidRow(
-    #verbatimTextOutput("clicks")
-  )  
+  )
 )
 
 server <- function(input, output, session) {
   
-  output$heat <- renderPlotly({ggplotly(gr, tooltip="text", source = "heat_plot")
-    #width <- session$clientData$output_heat_width
-    })
-                                #layout(height = 550, width = 600))
+  output$heat <- renderPlotly(ggplotly(gr, tooltip="text", source = "heat_plot")) %>% 
+        bindCache(gr, cache = "app")
+ 
   
   clickData <- reactive(event_data("plotly_click", source = "heat_plot"))
   chosen_genre_x <- reactive(genres_ordered[clickData()[['x']]])
@@ -38,7 +37,7 @@ server <- function(input, output, session) {
                        'Year' = 'startYear',
                        'Rating' = 'averageRating',
                         'Votes' = 'numVotes')
-                       )
+                       ) %>% bindCache(chosen_genre_x(), chosen_genre_y(), cache = "app")
   table_length <- reactive(dim(movies_to_show())[1])
   
   
@@ -61,7 +60,7 @@ server <- function(input, output, session) {
       movies_to_show()
     }
     
-  }, escape = FALSE, options = list(searching = FALSE, pageLength = 10))
+  }, escape = FALSE, options = list(pageLength = 7, autoWidth = TRUE))
   
   
   output$clicks <- renderPrint(clickData())  
