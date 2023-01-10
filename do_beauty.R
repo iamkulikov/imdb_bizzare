@@ -3,8 +3,10 @@ library(ggplot2)
 library(plotly)
 #library(rsconnect)
 
+#### !!!! Do not forget to comment the working directory for deployment
 #setwd("C:/Projects/imdb_bizzare")
 source("genre_script.R")
+
 
 ### Set options
 
@@ -14,25 +16,17 @@ basics_fname <- "title.basics.tsv.gz"
 ratings_fname <- "title.ratings.tsv.gz"
 use_adult <- 0
 use_types <- c("movie")
-export_fname <- "movies.xlsx"
-export_sheetname <- c("data", "pairs_count")
-import_fname <- "movies.xlsx"
-import_sheetname <- c("data", "pairs_count")
 importcsvdata_fname <- "movies.csv"
 importcsvpairs_fname <- "pairs_count.csv"
 OMDB_API_KEY <- "3c35f91c"   # move to external file?
 
+
 ### Import data
 
 if (update_data == 1) {
-  updateDataFromIMDB(basics_fname = basics_fname, use_adult = use_adult, use_types = use_types, export_fname = export_fname, export_sheetname = export_sheetname)
+  updateDataFromIMDB(basics_fname = basics_fname, use_adult = use_adult, use_types = use_types, exportcsvdata_fname = importcsvdata_fname, exportcsvpairs_fname = importcsvpairs_fname)
   gc()
   }
-  
-#df2 <- readxl::read_excel(import_fname, sheet = import_sheetname[1], col_names = T)
-#genre_pairs <- readxl::read_excel(import_fname, sheet = import_sheetname[2], col_names = T)
-#write.csv(df2, importcsvdata_fname, row.names=FALSE)
-#write.csv(genre_pairs, importcsvpairs_fname, row.names=FALSE)
 
 df2 <- readr::read_csv(importcsvdata_fname, col_names = T)
 genre_pairs <- readr::read_csv(importcsvpairs_fname, col_names = T)
@@ -54,8 +48,6 @@ gr <- ggplot(genre_pairs_long_t,
             theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 0),
                   axis.title.x = element_blank(), axis.title.y = element_blank()) 
 gr <- ggplotly(gr, tooltip="text", source = "heat_plot")
-
-#ggplotly(gr, tooltip="text")
 
 
 ### Generate a long list of movies based on the chosen genre pair

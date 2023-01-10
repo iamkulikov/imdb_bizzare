@@ -2,7 +2,7 @@
 
 ### Download source file from IMDB and save subset locally. Data description: https://www.imdb.com/interfaces/
 
-updateDataFromIMDB <- function(basics_fname, use_adult, use_types, export_fname, export_sheetname) {
+updateDataFromIMDB <- function(basics_fname, use_adult, use_types, exportcsvdata_fname, exportcsvpairs_fname) {
   
   # download
   url <- glue::glue("https://datasets.imdbws.com/{basics_fname}")
@@ -41,12 +41,8 @@ updateDataFromIMDB <- function(basics_fname, use_adult, use_types, export_fname,
   }
   
   # export
-  data_export <- list(df2, genre_pairs)
-  names(data_export) <- export_sheetname
-  writexl::write_xlsx(data_export, path = export_fname, col_names = TRUE, format_headers = TRUE)
-  #write.csv(df2, importcsvdata_fname, row.names=FALSE)
-  #write.csv(genre_pairs, importcsvpairs_fname, row.names=FALSE)
-  rm(data_export)
+  write.csv(df2, exportcsvdata_fname, row.names=FALSE)
+  write.csv(genre_pairs, exportcsvpairs_fname, row.names=FALSE)
   
   }
 

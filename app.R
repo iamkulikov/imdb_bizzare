@@ -8,25 +8,23 @@ ui <- fluidPage(
   titlePanel("Choose movies to watch based on genre combinations (IMDB)"),
   
   fluidRow(  
-    column(
-      6,
-      plotlyOutput("heat", height = "100%")),
-    column(
-      6,
-      textOutput("chosen_genres"),
-      tags$head(tags$style("#chosen_genres{color: red;
-                                          font-size: 25px;
-                                          font-style: bold;
-                                          }")),
-      dataTableOutput("table"))
+    column(6, plotlyOutput("heat", height = "100%")),
+    column(6, textOutput("chosen_genres"),
+              tags$head(tags$style("#chosen_genres{color: red;
+                                                  font-size: 25px;
+                                                  font-style: bold;
+                                                  }")),
+              dataTableOutput("table"))
   )
 )
 
+
 server <- function(input, output, session) {
   
+  # Placing the plot
   output$heat <- renderPlotly(gr) %>% bindCache(gr, cache = "app")
  
-  
+  # Defining all the reactive calculations click -> table
   clickData <- reactive(event_data("plotly_click", source = "heat_plot"))
   chosen_genre_x <- reactive(genres_ordered[clickData()[['x']]])
   chosen_genre_y <- reactive(genres_ordered[30 - as.numeric(clickData()[['y']])])
@@ -39,7 +37,7 @@ server <- function(input, output, session) {
                        ) %>% bindCache(chosen_genre_x(), chosen_genre_y(), cache = "app")
   table_length <- reactive(dim(movies_to_show())[1])
   
-  
+  # Showing the names of a chosen genre pair 
   output$chosen_genres <- renderText({
     
     if (is.null(clickData())) {
@@ -50,7 +48,7 @@ server <- function(input, output, session) {
     
   })
   
-  
+  # Printing a table of movies for a chosen genre pair
   output$table <- renderDataTable({
     
     if (is.null(clickData())) {
@@ -61,7 +59,7 @@ server <- function(input, output, session) {
     
   }, escape = FALSE, options = list(pageLength = 7, autoWidth = TRUE))
   
-  
+  # Sleeping calculation for troubleshooting
   output$clicks <- renderPrint(clickData())  
   
 }
