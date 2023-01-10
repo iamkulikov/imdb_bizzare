@@ -24,8 +24,7 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
-  output$heat <- renderPlotly(ggplotly(gr, tooltip="text", source = "heat_plot")) %>% 
-        bindCache(gr, cache = "app")
+  output$heat <- renderPlotly(gr) %>% bindCache(gr, cache = "app")
  
   
   clickData <- reactive(event_data("plotly_click", source = "heat_plot"))

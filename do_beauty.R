@@ -3,7 +3,7 @@ library(ggplot2)
 library(plotly)
 #library(rsconnect)
 
-setwd("C:/Projects/imdb_bizzare")
+#setwd("C:/Projects/imdb_bizzare")
 source("genre_script.R")
 
 ### Set options
@@ -52,7 +52,8 @@ gr <- ggplot(genre_pairs_long_t,
             aes(x = genre1, y = genre2, fill = log(pair_share), text = text)) + 
             geom_tile(show.legend = FALSE) +
             theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 0),
-                  axis.title.x = element_blank(), axis.title.y = element_blank())
+                  axis.title.x = element_blank(), axis.title.y = element_blank()) 
+gr <- ggplotly(gr, tooltip="text", source = "heat_plot")
 
 #ggplotly(gr, tooltip="text")
 
