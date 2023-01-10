@@ -2,9 +2,11 @@
 
 https://iamkulikov.shinyapps.io/imdb_bizzare/
 
-![Screenshot of the app](imdb_screen.jpeg)
+![Screenshot of the app](imdb_screen.jpg)
 
-To do:
+**To do:**
 1. Augment data with OMDB
+
 2. Plot legend?
+
 3. Manage simultaneous connections
