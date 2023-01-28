@@ -47,7 +47,7 @@ gr <- ggplot(genre_pairs_long_t,
             geom_tile(show.legend = FALSE) +
             theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 0),
                   axis.title.x = element_blank(), axis.title.y = element_blank()) 
-gr <- ggplotly(gr, tooltip="text", source = "heat_plot")
+gr <- ggplotly(gr, tooltip="text", source = "heat_plot") %>% config(displayModeBar = FALSE)
 
 
 ### Generate a long list of movies based on the chosen genre pair
