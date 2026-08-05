@@ -93,7 +93,31 @@ makeHeatmapMatrix <- function(genre_pairs_long, order) {   #order has to contain
 
 ### Function to produce the list of movies with a particular genre pair
 
+genre_from_plotly_click <- function(value, genres) {
+  n_genres <- length(genres)
+
+  if (is.null(value) || length(value) != 1 || is.na(value)) {
+    return(NA_character_)
+  }
+
+  label <- as.character(value)
+  if (label %in% genres) {
+    return(label)
+  }
+
+  idx <- suppressWarnings(as.integer(value))
+  if (is.na(idx) || idx < 1 || idx > n_genres) {
+    return(NA_character_)
+  }
+
+  genres[idx]
+}
+
 findMoviesByGenreComb <- function(data, genre1, genre2) {
+  if (length(genre1) != 1 || length(genre2) != 1 ||
+      is.na(genre1) || is.na(genre2) || !nzchar(genre1) || !nzchar(genre2)) {
+    return(data[0, , drop = FALSE])
+  }
 
 out <- data %>% mutate(first = stringr::str_detect(genres, genre1), 
                second = stringr::str_detect(genres, genre2),
